@@ -1,4 +1,4 @@
-import { cart } from "../data/cart.js";
+import { cart, addToCart } from "../data/cart.js";
 import { products } from "../data/products.js";
 
 
@@ -62,37 +62,28 @@ document.querySelector(".js-products-grid").innerHTML = productsHTML;
 
 const previousTimeouts = new Map();
 
+
+function updateCartQuantity() {
+  let cartQuantity = 0;
+  cart.forEach((cartItem) => {
+    cartQuantity += cartItem.quantity;
+  });
+
+  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
+}
+
 document.querySelectorAll(".js-add-to-cart-button").forEach((button) => {
   button.addEventListener("click", () => {
     console.log("Add to Cart");
     // retrieve data-* html attributes
     // kebab-case to camelCase
     const { productId: id } = button.dataset;
-    let matchingItem;
 
-    cart.forEach((item) => {
-      if (item.id === id) {
-        matchingItem = item;
-      }
-    });
+    addToCart(id);
 
-    const qtySelectorElement = document.querySelector(`.js-quantity-selector-${id}`);
-    const qty = Number(qtySelectorElement.value);
+    updateCartQuantity();
 
-    if (matchingItem) {
-      matchingItem.quantity += qty;
-    } else {
-      cart.push({ id, quantity: qty });
-    } 
-
-    let cartQuantity = 0;
-    cart.forEach((item) => {
-      cartQuantity += item.quantity;
-    });
-
-    document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
-
-    addedToCartElement = document.querySelector(`.js-added-to-cart-${id}`)
+    const addedToCartElement = document.querySelector(`.js-added-to-cart-${id}`)
     addedToCartElement.classList.add("added-to-cart-visible");
 
     // Cancel the timeout if the user clicks on the "Add to Cart" button again
